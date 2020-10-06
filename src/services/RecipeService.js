@@ -1,34 +1,31 @@
 const axios = require('axios');
+const orderIngredients = require('../utils/ingredientsOrder');
+const searchGiphy = require('../utils/searchGiphy');
+
+
 class RecipeSevice {
   constructor(){
-    this.giphyApi = process.env.GIPHY_API_ENDPOINT;
     this.recipeApi = process.env.RECIPE_PUPPY_API;
-    this.giphyApiKey = process.env.GIPHY_API_KEY;
   }
   async search(parameter) {
     try {
-      const { data: { results } } = await axios.get(`${this.recipeApi}/?i=${parameter}`);
-      const recipes = results.map(async ({title, ingredients, href: link}) => 
-      {
-        const { data: { images : { original: { url } } } } = await axios.get(this.giphyApi, { params: {
-          q: encodeURI(title),
-          api_key: this.giphyApiKey
-        } 
-      }).catch(err => console.log(err))
-      console.log("url", url);
-        return {
-          title,
-          ingredients,
-          link,
-          gif: "chamada do axios"
-        }
-      }
-      )
-      return recipes;
+      const { data: { results } } = await axios.get(`${this.recipeApi}/?i=${parameter.toString()}`);
+
+      const recipes = await Promise.all(results.map(async ({title, ingredients, href: link}) => ({
+        title,
+        ingredients: await orderIngredients(ingredients),
+        link,
+        gif: await searchGiphy(title)
+      })       
+      ))
+
+      const response = { keywords: parameter, recipes };
+
+      return response;
     } catch (error) {
       return error;
     }
   }
 }
 
-module.exports = new RecipeSevice;
+module.exports = new RecipeSevice();
