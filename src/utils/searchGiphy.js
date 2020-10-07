@@ -18,7 +18,6 @@ const searchGiphy = async (text) => {
     return data[0].images.original.url;
 
   } catch (error) {
-    console.log("err", error);
     return "";
   }
 }
