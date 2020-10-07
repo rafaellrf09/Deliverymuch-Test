@@ -1,6 +1,6 @@
 const axios = require('axios');
-const orderIngredients = require('../utils/ingredientsOrder');
-const searchGiphy = require('../utils/searchGiphy');
+const orderIngredients = require('../../utils/ingredientsOrder');
+const searchGiphy = require('../../utils/searchGiphy');
 
 
 class RecipeSevice {
